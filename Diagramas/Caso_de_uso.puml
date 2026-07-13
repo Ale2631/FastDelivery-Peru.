@@ -1,0 +1,95 @@
+@startuml
+skinparam DefaultFontName Arial
+skinparam ClassBackgroundColor #F5F5F5
+skinparam ClassBorderColor #333333
+skinparam ArrowColor #333333
+
+class Usuario {
+  -idUsuario: int
+  -nombre: String
+  -correo: String
+  -telefono: String
+  +iniciarSesion(): boolean
+}
+
+class Cliente {
+  -direccionEntrega: String
+  +registrarse(): boolean
+  +realizarPedido(): Pedido
+  +realizarPagoOnline(pedido: Pedido): void
+  +consultarEstadoDelivery(idPedido: int): String
+}
+
+class Repartidor {
+  -vehiculo: String
+  -estadoActual: String
+  +recibirPedido(pedido: Pedido): void
+  +actualizarEstadoEntrega(idPedido: int, estado: String): void
+}
+
+class Administrador {
+  -codigoEmpleado: String
+  +gestionarInventario(): void
+  +gestionarPedidos(): void
+  +visualizarReportes(): void
+}
+
+class Pedido {
+  -idPedido: int
+  -fecha: Date
+  -estado: String
+  -total: double
+  +calcularTotal(): void
+  +actualizarEstado(nuevoEstado: String): void
+}
+
+class Pago {
+  -idPago: int
+  -monto: double
+  -metodoPago: String
+  -estadoPago: String
+  +procesarTransaccion(): boolean
+  +emitirComprobante(): void
+}
+
+class DetallePedido {
+  -cantidad: int
+  -precioUnitario: double
+  +subtotal(): double
+}
+
+class Producto {
+  -idProducto: int
+  -nombre: String
+  -precio: double
+  -stockActual: int
+  +actualizarStock(cantidad: int): void
+}
+
+' Relaciones de Herencia
+Usuario <|-- Cliente
+Usuario <|-- Repartidor
+Usuario <|-- Administrador
+
+' Relaciones de Asociación y Multiplicidades
+Cliente "1" -- "*" Pedido : realiza >
+Repartidor "1" -- "*" Pedido : entrega >
+Pedido "1" -- "1" Pago : asocia >
+Pedido "1" -- "*" DetallePedido : contiene >
+DetallePedido "*" -- "1" Producto : incluye >
+Administrador "1" -- "*" Producto : gestiona >
+
+' Notas y Leyenda
+note "LEYENDA:\n- Atributos Privados\n+ Metodos Publicos\n-- Relaciones:\n<|-- Herencia\n*-- Composicion\n-- Asociacion" as Legend
+Usuario .. Legend
+
+note "Cliente: Usuario que realiza pedidos." as N1
+Cliente .. N1
+
+note "Pedido: Solicitud con lineas de detalle." as N2
+Pedido .. N2
+
+note "Producto: Articulos con control de stock." as N3
+Producto .. N3
+
+@endum
