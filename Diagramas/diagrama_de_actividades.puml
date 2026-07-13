@@ -1,0 +1,65 @@
+@startuml
+skinparam DefaultFontName Arial
+skinparam ActivityBackgroundColor #F5F5F5
+skinparam ActivityBorderColor #333333
+skinparam ArrowColor #333333
+
+|Cliente|
+start
+:Registrarse en la aplicación;
+:Seleccionar productos y realizar pedido;
+
+|Sistema (Backend)|
+:Verificar disponibilidad en Inventario;
+if (¿Hay Stock?) then (No)
+  |Cliente|
+  :Recibir notificación de falta de stock;
+  detach
+else (Sí)
+  |Sistema (Backend)|
+  :Reservar productos en Inventario;
+  
+  |Cliente|
+  :Proceder al pago online;
+  :Ingresar datos de tarjeta/pago;
+endif
+
+|Pasarela de Pagos|
+:Procesar transacción de pago;
+if (¿Pago Exitoso?) then (No)
+  |Cliente|
+  :Visualizar error de pago;
+  |Sistema (Backend)|
+  :Liberar reserva de inventario;
+  detach
+else (Sí)
+  |Pasarela de Pagos|
+  :Emitir comprobante digital;
+  
+  |Sistema (Backend)|
+  :Actualizar Stock permanentemente;
+  :Generar Orden de Pedido (Estado: Pagado);
+  :Notificar a repartidores cercanos;
+endif
+
+|Repartidor|
+:Recibir alerta de nuevo pedido;
+:Aceptar pedido en la aplicación;
+:Recoger pedido en el establecimiento;
+:Actualizar estado a "En Ruta";
+
+|Cliente|
+:Consultar estado del delivery (En Ruta);
+
+|Repartidor|
+:Entregar pedido al cliente;
+:Actualizar estado a "Entregado";
+
+|Sistema (Backend)|
+:Cerrar Orden de Pedido;
+:Guardar historial para reportes de administración;
+
+|Cliente|
+:Recibir confirmación de entrega exitosa;
+stop
+@endum
