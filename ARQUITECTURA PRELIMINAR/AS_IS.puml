@@ -1,0 +1,45 @@
+@startuml
+skinparam DefaultFontName Arial
+skinparam ActivityBackgroundColor #F5F5F5
+skinparam ActivityBorderColor #333333
+skinparam ArrowColor #333333
+
+|Cliente|
+start
+:Registrarse en la aplicación y realizar pedido;
+
+|Sistema (Backend Actual)|
+if (¿Sistema integrado con el inventario de ventas?) then (No)
+  :PROBLEMA: Quiebre de stock por falta de sincronización\nConsecuencia: El área de ventas no ve el stock real y se ofrece inventario desactualizado;
+  :Proceder al pago online e ingresar datos de tarjeta;
+else (Sí)
+  :Proceder al pago online e ingresar datos de tarjeta;
+endif
+
+|Pasarela de Pagos|
+if (¿Pasarela integrada correctamente con el backend?) then (No)
+  :PROBLEMA: Errores en la confirmación de transacciones\nConsecuencia: Fallas de comunicación causan cobros fantasmas o rebotes de pago;
+  :Generar orden de pedido para despacho;
+else (Sí)
+  :Generar orden de pedido para despacho;
+endif
+
+|Sistema (Backend Actual)|
+if (¿Base de datos unificada para evitar redundancia?) then (No)
+  :PROBLEMA: Duplicidad de pedidos en el sistema\nConsecuencia: La falta de consistencia genera órdenes dobles para un mismo cliente;
+  :Notificar y buscar repartidores cercanos;
+else (Sí)
+  :Notificar y buscar repartidores cercanos;
+endif
+
+|Repartidor|
+if (¿Módulo de despacho automatizado y conectado?) then (No)
+  :PROBLEMA: Retrasos masivos por asignación manual\nConsecuencia: Falta de control logístico obliga a coordinar envíos de forma externa;
+  :Recibir confirmación de entrega exitosa;
+else (Sí)
+  :Recibir confirmación de entrega exitosa;
+endif
+
+|Cliente|
+stop
+@endum
