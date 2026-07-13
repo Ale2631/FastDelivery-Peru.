@@ -1,0 +1,58 @@
+@startuml
+!theme blueprint
+skinparam DefaultFontName Arial
+skinparam packageStyle rectangle
+
+title Diagrama de Arquitectura Tecnológica (TO-BE) - FastDelivery Perú
+
+node "Canales de Usuario (Frontend)" {
+  [App Móvil (Flutter/React Native)] as App
+  [Portal Web Administrativo] as Web
+}
+
+node "Plataforma Cloud (AWS / Google Cloud)" {
+  
+  package "Capa de Servicios & APIs" {
+    [API Gateway] as Gateway
+    [Servicio de Autenticación] as Auth
+    [Core Backend (Node.js/Python)] as Backend
+    [Módulo de Geolocalización] as Geo
+  }
+  
+  database "Capa de Datos Unificada" {
+    [Base de Datos Relacional (PostgreSQL)] as DB
+    [Caché de Inventario (Redis)] as Cache
+  }
+}
+
+cloud "Servicios Externos Integrados (APIs)" {
+  [Pasarela de Pagos (Culqi/Niubiz)] as Pasarela
+  [API Mapas (Google Maps)] as Maps
+}
+
+' Flujo de interacciones tecnológicas e integración
+App --> Gateway : 1. Solicitudes HTTPS / REST
+Web --> Gateway
+
+Gateway --> Auth : Valida Token
+Gateway --> Backend : Enruta Peticiones
+
+Backend --> Cache : 2. Verifica/Reserva Stock en tiempo real (Cero quiebres)
+Backend --> DB : 3. Registra Orden transaccional (Evita duplicidad)
+
+Backend --> Pasarela : 4. Procesa Pago seguro mediante API
+Backend --> Geo : 5. Despacha orden automáticamente
+
+Geo --> Maps : Consume coordenadas
+Geo --> App : 6. Notifica Push al Repartidor cercano
+
+' Cuadro de Beneficios Esperados requeridos por la guía
+legend right
+  <b>BENEFICIOS ESPERADOS DE LA ARQUITECTURA:</b>
+  * <b>Cero Duplicados:</b> BD unificada con aislamiento de transacciones.
+  * <b>Stock en Tiempo Real:</b> Sincronización inmediata vía caché/almacén.
+  * <b>Automatización Logística:</b> Asignación por geolocalización sin llamadas manuales.
+  * <b>Seguridad Financiera:</b> Pasarela integrada por tokens cifrados.
+endlegend
+
+@endum
